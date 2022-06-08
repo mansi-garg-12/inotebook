@@ -42,8 +42,42 @@ router.post('/createuser',[
     }
     catch(error){
         console.error(error.message);
-        res.status(500).send("some error occured");
+        res.status(500).send("Interval server error occured");
     }
    
 })
+router.post('/login',[ 
+  body('email','Enter the valid email').isEmail(),  // password validation
+  body('password','please cannot to blank').exists()], //name validation
+  async (req,res)=>{  
+    const errors = validationResult(req); // checking for errors
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const{email,password}=req.body;
+      try{
+        let user=await User.findOne({email});
+        if(!user)
+        {
+          return res.status(400).json({ errors: "Please enter the correct credentials" });
+        }
+        const passwordauthentication=await bcrypt.compare(password,user.password);
+        if(!passwordauthentication){
+          return res.status(400).json({ errors: "Please enter the correct credentials" });
+        }
+        
+        const data={
+          user:{
+            id:user.id
+          }
+      }
+      const authentication=jwt.sign(data,JWT_SECRET);
+      res.json({authentication});
+      }
+      catch(error){
+        console.error(error.message);
+        res.status(500).send("Interval server error occured");
+    }
+
+  })
 module.exports=router
