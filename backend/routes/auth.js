@@ -1,22 +1,34 @@
-const express=require('express');
-const router=express.Router();
-const User=require('../modules/User');
-const { body, validationResult } = require('express-validator');
-router.post('/',[ 
-    body('email','Enter a valid name').isEmail(),
-    body('password','Enter the valid email').isLength({ min: 5 }),
-    body('name','please enter min 3 length password').isLength({ min: 3 })],(req,res)=>{
+const express=require('express');  // connect express
+const router=express.Router();     //connect express router
+const User=require('../modules/User');   //import module
+const { body, validationResult } = require('express-validator');  // for schema validation
+const { findOne } = require('../modules/User'); // to find the unique or not
+router.post('/createuser',[ 
+    body('email','Enter a valid name').isEmail(),  // email validation
+    body('password','Enter the valid email').isLength({ min: 5 }),  // password validation
+    body('name','please enter min 3 length password').isLength({ min: 3 })], //name validation
+    async (req,res)=>{  // async req and res
    
-    const errors = validationResult(req);
+    const errors = validationResult(req); // checking for errors
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-      User.create({
+      try{ // try and catch if there is any user
+      let user=await User.findOne({email : req.body.email});  // it will find existting amail
+      if(user){ // if present then print error
+      return res.status(400).json({errors: "Email already exist"})
+      }
+      user=await User.create({
         name: req.body.name,
         email:req.body.email,
         password: req.body.password,
-      }).then(user => res.json(user))
-      .catch(err=>{console.log(err)
-        res.json({error:'Please enter the unique value',message : err.message})})
+      })
+      res.json(user);
+    }
+    catch{
+        console.error(error.message);
+        res.status(500).send("some error occured");
+    }
+   
 })
 module.exports=router

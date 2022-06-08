@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
+const mongoose = require('mongoose'); //connect to mongoose
+const { Schema } = mongoose;  //schema insertion
 
 const UserSchema = new Schema({
     name:{
@@ -20,6 +20,6 @@ const UserSchema = new Schema({
         default: Date.now
     },
   });
+  //export model to user 
 const User = mongoose.model('user', UserSchema);
-User.createIndexes();
 module.exports = User;
