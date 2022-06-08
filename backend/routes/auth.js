@@ -3,7 +3,9 @@ const router=express.Router();     //connect express router
 const User=require('../modules/User');   //import module
 const { body, validationResult } = require('express-validator');  // for schema validation
 const { findOne } = require('../modules/User'); // to find the unique or not
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs'); // to hash the password
+var jwt = require('jsonwebtoken'); // to create a response using web socket
+const JWT_SECRET='mansithepasswo$rd';
 router.post('/createuser',[ 
     body('email','Enter a valid name').isEmail(),  // email validation
     body('password','Enter the valid email').isLength({ min: 5 }),  // password validation
@@ -26,8 +28,17 @@ router.post('/createuser',[
         name: req.body.name,
         email:req.body.email,
         password: secPass,
-      })
-      res.json(user);
+      });
+
+      const data={
+          user:{
+            id:user.id
+          }
+      }
+      const authtoken=jwt.sign(data,JWT_SECRET); //authentication
+      res.json({authtoken});  
+      // console.log(jwtData);
+      // res.json(user);
     }
     catch(error){
         console.error(error.message);
