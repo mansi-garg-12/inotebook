@@ -3,6 +3,7 @@ const router=express.Router();     //connect express router
 const User=require('../modules/User');   //import module
 const { body, validationResult } = require('express-validator');  // for schema validation
 const { findOne } = require('../modules/User'); // to find the unique or not
+const bcrypt = require('bcryptjs');
 router.post('/createuser',[ 
     body('email','Enter a valid name').isEmail(),  // email validation
     body('password','Enter the valid email').isLength({ min: 5 }),  // password validation
@@ -18,14 +19,17 @@ router.post('/createuser',[
       if(user){ // if present then print error
       return res.status(400).json({errors: "Email already exist"})
       }
+      const salt=await bcrypt.genSalt(10);
+      const secPass=await bcrypt.hash(req.body.password,salt);
+      //create a new user
       user=await User.create({
         name: req.body.name,
         email:req.body.email,
-        password: req.body.password,
+        password: secPass,
       })
       res.json(user);
     }
-    catch{
+    catch(error){
         console.error(error.message);
         res.status(500).send("some error occured");
     }
