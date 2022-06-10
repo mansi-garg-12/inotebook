@@ -1,6 +1,7 @@
 const express=require('express');  // connect express
 const router=express.Router();     //connect express router
-const User=require('../modules/User');   //import module
+const User=require('../modules/User'); 
+const fetchuser=require('../middlewear/fetchuser');  //import module
 const { body, validationResult } = require('express-validator');  // for schema validation
 const { findOne } = require('../modules/User'); // to find the unique or not
 const bcrypt = require('bcryptjs'); // to hash the password
@@ -79,5 +80,19 @@ router.post('/login',[
         res.status(500).send("Interval server error occured");
     }
 
+  })
+
+
+// for logined user
+router.post('/getuser',fetchuser, //name validation
+  async (req,res)=>{  
+    try {
+      userId=req.user.id;
+      const user=await User.findById(userId).select("-password");
+      res.send(user);
+    } catch(error){
+      console.error(error.message);
+      res.status(500).send("Interval server error occured");
+  }
   })
 module.exports=router
