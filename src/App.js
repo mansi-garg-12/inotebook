@@ -1,10 +1,28 @@
+import React from 'react'
 
-import './App.css';
 
-function App() {
+import Home from './components/Home'
+import About from './components/About'
+import Login from './components/Login'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import Navbar from './components/Navbar'
+
+const App = () => {
   return (
-    <h1>THis is my Inotebook</h1>
-  );
+      <>
+          <Router>
+              <Navbar/>
+              <Switch>
+                  <Route exact path="/"><Home /></Route>
+                  <Route exact path="/about"><About /></Route>
+                  <Route exact path="/Login"><Login/></Route>
+              </Switch>
+          </Router>
+
+
+
+      </>
+  )
 }
 
-export default App;
+export default App
