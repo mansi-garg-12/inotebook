@@ -1,12 +1,17 @@
-import React from 'react'
+
+import { useContext } from 'react';
+import noteContext from '../context/notes/NoteContext';
+
+
 // import {
 //     BrowserRouter as Router,
 //     Switch,
 //     Route,
 //   } from "react-router-dom";
 function About() {
+  const a=useContext(noteContext);
   return (
-    <div>About</div>
+    <div>About me {a.name}</div>
   )
 }
 
